@@ -8,11 +8,11 @@ public class Elections {
     List<String> officialCandidates = new ArrayList<>();
     ArrayList<Integer> votesWithoutDistricts = new ArrayList<>();
     Map<String, ArrayList<Integer>> votesWithDistricts;
-    private Map<String, List<String>> list;
+    private Map<String, List<String>> electorsPerDistrict;
     private boolean withDistrict;
 
-    public Elections(Map<String, List<String>> list, boolean withDistrict) {
-        this.list = list;
+    public Elections(Map<String, List<String>> electorsPerDistrict, boolean withDistrict) {
+        this.electorsPerDistrict = electorsPerDistrict;
         this.withDistrict = withDistrict;
 
         votesWithDistricts = new HashMap<>();
@@ -138,7 +138,7 @@ public class Elections {
         float nullResult = ((float)nullVotes * 100) / nbVotes;
         results.put("Null", String.format(Locale.FRENCH, "%.2f%%", nullResult));
 
-        int nbElectors = list.values().stream().map(List::size).reduce(0, Integer::sum);
+        int nbElectors = electorsPerDistrict.values().stream().map(List::size).reduce(0, Integer::sum);
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(2);
         float abstentionResult = 100 - ((float) nbVotes * 100 / nbElectors);

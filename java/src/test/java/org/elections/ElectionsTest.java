@@ -11,12 +11,12 @@ class ElectionsTest {
 
     @Test
     void electionWithoutDistricts() {
-        Map<String, List<String>> list = Map.of(
+        Map<String, List<String>> electorsPerDistrict = Map.of(
                 "District 1", Arrays.asList("Bob", "Anna", "Jess", "July"),
                 "District 2", Arrays.asList("Jerry", "Simon"),
                 "District 3", Arrays.asList("Johnny", "Matt", "Carole")
         );
-        Elections elections = new Elections(list, false);
+        Elections elections = new Elections(electorsPerDistrict, false);
         elections.addCandidate("Michel");
         elections.addCandidate("Jerry");
         elections.addCandidate("Johnny");
@@ -44,12 +44,12 @@ class ElectionsTest {
 
     @Test
     void electionWithDistricts() {
-        Map<String, List<String>> list = Map.of(
+        Map<String, List<String>> electorsPerDistrict = Map.of(
                 "District 1", Arrays.asList("Bob", "Anna", "Jess", "July"),
                 "District 2", Arrays.asList("Jerry", "Simon"),
                 "District 3", Arrays.asList("Johnny", "Matt", "Carole")
         );
-        Elections elections = new Elections(list, true);
+        Elections elections = new Elections(electorsPerDistrict, true);
         elections.addCandidate("Michel");
         elections.addCandidate("Jerry");
         elections.addCandidate("Johnny");
