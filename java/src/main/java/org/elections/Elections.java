@@ -4,12 +4,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Elections {
+    private class Candidate {
+        final String name;
+
+        public Candidate(String name) {
+            this.name = name;
+        }
+    }
     List<String> candidates = new ArrayList<>();
+    List<Candidate> candidates2 = new ArrayList<>();
     List<String> officialCandidates = new ArrayList<>();
     ArrayList<Integer> votesWithoutDistricts = new ArrayList<>();
-    Map<String, Integer> candidateVotesWithoutDistrict = new HashMap<>();
     Map<String, ArrayList<Integer>> votesWithDistricts;
     private Map<String, List<String>> electorsPerDistrict;
+
     private boolean withDistrict;
 
     public Elections(Map<String, List<String>> electorsPerDistrict, boolean withDistrict) {
@@ -23,8 +31,7 @@ public class Elections {
     }
 
     public void addCandidate(String candidate) {
-        candidateVotesWithoutDistrict.put(candidate, 0);
-
+        candidates2.add(new Candidate(candidate));
         addUnofficialCandidate(candidate);
         makeOfficial(candidate);
     }
