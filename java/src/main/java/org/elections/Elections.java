@@ -111,7 +111,7 @@ public class Elections {
             }
             for (int i = 0; i < officialCandidatesResult.size(); i++) {
                 Float ratioCandidate = ((float) officialCandidatesResult.get(candidates.get(i))) / officialCandidatesResult.size() * 100;
-                results.put(candidates.get(i), String.format(Locale.FRENCH, "%.2f%%", ratioCandidate));
+                results.put(candidates.get(i), format(ratioCandidate));
             }
         } else {
 
@@ -119,33 +119,34 @@ public class Elections {
             int nbValidVotes = countValidVotes();
 
             for (int i = 0; i < votesWithoutDistricts.size(); i++) {
-                Float candidateResult = ((float) votesWithoutDistricts.get(i) * 100) / nbValidVotes;
+                Integer candidateVotes = votesWithoutDistricts.get(i);
                 String candidate = candidates.get(i);
                 if (officialCandidates.contains(candidate)) {
-                    results.put(candidate, String.format(Locale.FRENCH, "%.2f%%", candidateResult));
+                    Float candidateResult = ((float) candidateVotes * 100) / nbValidVotes;
+                    results.put(candidate, format(candidateResult));
+                } else if (candidate.isEmpty()) {
+                    blankVotes += candidateVotes;
                 } else {
-                    if (candidate.isEmpty()) {
-                        blankVotes += votesWithoutDistricts.get(i);
-                    } else {
-                        nullVotes += votesWithoutDistricts.get(i);
-                    }
+                    nullVotes += candidateVotes;
                 }
             }
         }
 
         float blankResult = ((float) blankVotes * 100) / nbVotes;
-        results.put("Blank", String.format(Locale.FRENCH, "%.2f%%", blankResult));
+        results.put("Blank", format(blankResult));
 
         float nullResult = ((float) nullVotes * 100) / nbVotes;
-        results.put("Null", String.format(Locale.FRENCH, "%.2f%%", nullResult));
+        results.put("Null", format(nullResult));
 
         int nbElectors = electorsPerDistrict.values().stream().map(List::size).reduce(0, Integer::sum);
-        DecimalFormat df = new DecimalFormat();
-        df.setMaximumFractionDigits(2);
         float abstentionResult = 100 - ((float) nbVotes * 100 / nbElectors);
-        results.put("Abstention", String.format(Locale.FRENCH, "%.2f%%", abstentionResult));
+        results.put("Abstention", format(abstentionResult));
 
         return results;
+    }
+
+    private String format(Float result) {
+        return String.format(Locale.FRENCH, "%.2f%%", result);
     }
 
     private int countValidVotes() {
