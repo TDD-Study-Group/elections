@@ -22,46 +22,37 @@ public class Elections {
     }
 
     public void addCandidate(String candidate) {
+        addUnofficialCandidate(candidate);
+        addOfficialCandidate(candidate);
+    }
+
+    private void addOfficialCandidate(String candidate) {
         officialCandidates.add(candidate);
-        candidates.add(candidate);
-        votesWithoutDistricts.add(0);
-        votesWithDistricts.get("District 1").add(0);
-        votesWithDistricts.get("District 2").add(0);
-        votesWithDistricts.get("District 3").add(0);
     }
 
     public void voteFor(String elector, String candidate, String electorDistrict) {
         if (withDistrict) {
             if (votesWithDistricts.containsKey(electorDistrict)) {
-                ArrayList<Integer> districtVotes = votesWithDistricts.get(electorDistrict);
-                if (candidates.contains(candidate)) {
-                    incrementVoteFor(candidate, districtVotes);
-                } else {
-                    candidates.add(candidate);
-                    votesWithDistricts.forEach((district, votes) -> {
-                        votes.add(0);
-                    });
-                    incrementVoteFor(candidate, districtVotes);
-//                    districtVotes.set(candidates.size() - 1, districtVotes.get(candidates.size() - 1) + 1);
-                }
+                addUnofficialCandidate(candidate);
+                incrementVoteFor(candidate, votesWithDistricts.get(electorDistrict));
             }
         } else {
-            if (candidates.contains(candidate)) {
-                incrementVoteFor(candidate, votesWithoutDistricts);
-            } else {
-                addCandidateWithOneVote(candidate);
-            }
+            addUnofficialCandidate(candidate);
+            incrementVoteFor(candidate, votesWithoutDistricts);
+        }
+    }
+
+    private void addUnofficialCandidate(String candidate) {
+        if (!candidates.contains(candidate)) {
+            candidates.add(candidate);
+            votesWithoutDistricts.add(0);
+            votesWithDistricts.forEach((district, votes) -> votes.add(0));
         }
     }
 
     private void incrementVoteFor(String candidate, ArrayList<Integer> votes) {
         int index = candidates.indexOf(candidate);
         votes.set(index, votes.get(index) + 1);
-    }
-
-    private void addCandidateWithOneVote(String candidate) {
-        candidates.add(candidate);
-        votesWithoutDistricts.add(1);
     }
 
     public Map<String, String> results() {
