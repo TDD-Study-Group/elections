@@ -107,7 +107,9 @@ public class Elections {
                 Integer candidateVotes = votesWithoutDistricts.get(i);
                 String candidate = candidates.get(i);
                 if (officialCandidates.contains(candidate)) {
-                    Float candidateResult = ((float) candidateVotes * 100) / nbValidVotes;
+                    float candidateResult = 0f;
+                    if (nbValidVotes != 0)
+                        candidateResult = ((float) candidateVotes * 100) / nbValidVotes;
                     results.put(candidate, format(candidateResult));
                 } else if (candidate.isEmpty()) {
                     blankVotes += candidateVotes;
