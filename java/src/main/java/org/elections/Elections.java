@@ -35,33 +35,33 @@ public class Elections {
             if (votesWithDistricts.containsKey(electorDistrict)) {
                 ArrayList<Integer> districtVotes = votesWithDistricts.get(electorDistrict);
                 if (candidates.contains(candidate)) {
-                    int index = candidates.indexOf(candidate);
-                    districtVotes.set(index, districtVotes.get(index) + 1);
+                    incrementVoteFor(candidate, districtVotes);
                 } else {
                     candidates.add(candidate);
                     votesWithDistricts.forEach((district, votes) -> {
                         votes.add(0);
                     });
-                    districtVotes.set(candidates.size() - 1, districtVotes.get(candidates.size() - 1) + 1);
+                    incrementVoteFor(candidate, districtVotes);
+//                    districtVotes.set(candidates.size() - 1, districtVotes.get(candidates.size() - 1) + 1);
                 }
             }
         } else {
             if (candidates.contains(candidate)) {
-                incrementVoteForKnown(candidate);
+                incrementVoteFor(candidate, votesWithoutDistricts);
             } else {
                 addCandidateWithOneVote(candidate);
             }
         }
     }
 
+    private void incrementVoteFor(String candidate, ArrayList<Integer> votes) {
+        int index = candidates.indexOf(candidate);
+        votes.set(index, votes.get(index) + 1);
+    }
+
     private void addCandidateWithOneVote(String candidate) {
         candidates.add(candidate);
         votesWithoutDistricts.add(1);
-    }
-
-    private void incrementVoteForKnown(String candidate) {
-        int index = candidates.indexOf(candidate);
-        votesWithoutDistricts.set(index, votesWithoutDistricts.get(index) + 1);
     }
 
     public Map<String, String> results() {

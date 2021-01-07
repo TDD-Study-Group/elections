@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="org.dojo.elections" target="11" />
-      <module name="org.dojo.elections.main" target="11" />
-      <module name="org.dojo.elections.test" target="11" />
+    <bytecodeTargetLevel target="11">
+      <module name="org.example.elections" target="11" />
+      <module name="org.example.elections.main" target="11" />
+      <module name="org.example.elections.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
