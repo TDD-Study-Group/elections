@@ -31,15 +31,7 @@ public class Elections {
     }
 
     public void voteFor(String elector, String candidate, String electorDistrict) {
-        if (!withDistrict) {
-            if (candidates.contains(candidate)) {
-                int index = candidates.indexOf(candidate);
-                votesWithoutDistricts.set(index, votesWithoutDistricts.get(index) + 1);
-            } else {
-                candidates.add(candidate);
-                votesWithoutDistricts.add(1);
-            }
-        } else {
+        if (withDistrict) {
             if (votesWithDistricts.containsKey(electorDistrict)) {
                 ArrayList<Integer> districtVotes = votesWithDistricts.get(electorDistrict);
                 if (candidates.contains(candidate)) {
@@ -53,7 +45,23 @@ public class Elections {
                     districtVotes.set(candidates.size() - 1, districtVotes.get(candidates.size() - 1) + 1);
                 }
             }
+        } else {
+            if (candidates.contains(candidate)) {
+                incrementVoteForKnown(candidate);
+            } else {
+                addCandidateWithOneVote(candidate);
+            }
         }
+    }
+
+    private void addCandidateWithOneVote(String candidate) {
+        candidates.add(candidate);
+        votesWithoutDistricts.add(1);
+    }
+
+    private void incrementVoteForKnown(String candidate) {
+        int index = candidates.indexOf(candidate);
+        votesWithoutDistricts.set(index, votesWithoutDistricts.get(index) + 1);
     }
 
     public Map<String, String> results() {
@@ -71,10 +79,10 @@ public class Elections {
             }
 
             for (int i = 0; i < votesWithoutDistricts.size(); i++) {
-                Float candidatResult = ((float)votesWithoutDistricts.get(i) * 100) / nbValidVotes;
+                Float candidateResult = ((float)votesWithoutDistricts.get(i) * 100) / nbValidVotes;
                 String candidate = candidates.get(i);
                 if (officialCandidates.contains(candidate)) {
-                    results.put(candidate, String.format(Locale.FRENCH, "%.2f%%", candidatResult));
+                    results.put(candidate, String.format(Locale.FRENCH, "%.2f%%", candidateResult));
                 } else {
                     if (candidates.get(i).isEmpty()) {
                         blankVotes += votesWithoutDistricts.get(i);
