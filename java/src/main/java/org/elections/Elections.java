@@ -89,16 +89,14 @@ public class Elections {
                         nullVotes += candidateVotesInDistrict;
                     }
                 }
-                int districtWinnerIndex = 0;
-                for (int i = 1; i < districtResult.size(); i++) {
-                    if (districtResult.get(districtWinnerIndex) < districtResult.get(i))
-                        districtWinnerIndex = i;
-                }
-                officialCandidatesResult.put(candidates.get(districtWinnerIndex), officialCandidatesResult.get(candidates.get(districtWinnerIndex)) + 1);
+                String districtWinner = districtWinner(districtResult);
+                officialCandidatesResult.put(districtWinner,
+                        officialCandidatesResult.get(districtWinner) + 1);
             }
             for (int i = 0; i < officialCandidatesResult.size(); i++) {
-                Float ratioCandidate = ((float) officialCandidatesResult.get(candidates.get(i))) / officialCandidatesResult.size() * 100;
-                results.put(candidates.get(i), format(ratioCandidate));
+                String candidate = candidates.get(i);
+                Float ratioCandidate = ((float) officialCandidatesResult.get(candidate)) / officialCandidatesResult.size() * 100;
+                results.put(candidate, format(ratioCandidate));
             }
         } else {
 
@@ -130,6 +128,15 @@ public class Elections {
         results.put("Abstention", format(abstentionResult));
 
         return results;
+    }
+
+    private String districtWinner(ArrayList<Float> districtResult) {
+        int districtWinnerIndex = 0;
+        for (int i = 1; i < districtResult.size(); i++) {
+            if (districtResult.get(districtWinnerIndex) < districtResult.get(i))
+                districtWinnerIndex = i;
+        }
+        return candidates.get(districtWinnerIndex);
     }
 
     private int countValidVotesWithDistrict() {
