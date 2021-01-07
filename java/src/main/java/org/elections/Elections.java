@@ -7,6 +7,7 @@ public class Elections {
     List<String> candidates = new ArrayList<>();
     List<String> officialCandidates = new ArrayList<>();
     ArrayList<Integer> votesWithoutDistricts = new ArrayList<>();
+    Map<String, Integer> candidateVotesWithoutDistrict = new HashMap<>();
     Map<String, ArrayList<Integer>> votesWithDistricts;
     private Map<String, List<String>> electorsPerDistrict;
     private boolean withDistrict;
@@ -22,6 +23,8 @@ public class Elections {
     }
 
     public void addCandidate(String candidate) {
+        candidateVotesWithoutDistrict.put(candidate, 0);
+
         addUnofficialCandidate(candidate);
         makeOfficial(candidate);
     }
@@ -96,7 +99,6 @@ public class Elections {
                 results.put(candidate, ratioCandidate);
             }
         } else {
-
             nbVotes = votesWithoutDistricts.stream().reduce(0, Integer::sum);
             int nbValidVotes = countValidVotes();
 
@@ -126,6 +128,10 @@ public class Elections {
         float abstentionResult = 100 - ((float) nbVotes * 100 / nbElectors);
         results.put("Abstention", abstentionResult);
 
+        return formatted(results);
+    }
+
+    private Map<String, String> formatted(Map<String, Float> results) {
         return results.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, mapEntry -> format(mapEntry.getValue())));
     }
 
