@@ -1,10 +1,7 @@
 package org.elections;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Elections {
     List<String> candidates = new ArrayList<>();
@@ -59,7 +56,7 @@ public class Elections {
     }
 
     public Map<String, String> results() {
-        Map<String, String> results = new HashMap<>();
+        Map<String, Float> results = new HashMap<>();
         Integer nbVotes = 0;
         Integer nullVotes = 0;
         Integer blankVotes = 0;
@@ -96,7 +93,7 @@ public class Elections {
             for (int i = 0; i < officialCandidatesResult.size(); i++) {
                 String candidate = candidates.get(i);
                 Float ratioCandidate = ((float) officialCandidatesResult.get(candidate)) / officialCandidatesResult.size() * 100;
-                results.put(candidate, format(ratioCandidate));
+                results.put(candidate, ratioCandidate);
             }
         } else {
 
@@ -110,7 +107,7 @@ public class Elections {
                     float candidateResult = 0f;
                     if (nbValidVotes != 0)
                         candidateResult = ((float) candidateVotes * 100) / nbValidVotes;
-                    results.put(candidate, format(candidateResult));
+                    results.put(candidate, candidateResult);
                 } else if (candidate.isEmpty()) {
                     blankVotes += candidateVotes;
                 } else {
@@ -120,16 +117,16 @@ public class Elections {
         }
 
         float blankResult = ((float) blankVotes * 100) / nbVotes;
-        results.put("Blank", format(blankResult));
+        results.put("Blank", blankResult);
 
         float nullResult = ((float) nullVotes * 100) / nbVotes;
-        results.put("Null", format(nullResult));
+        results.put("Null", nullResult);
 
         int nbElectors = electorsPerDistrict.values().stream().map(List::size).reduce(0, Integer::sum);
         float abstentionResult = 100 - ((float) nbVotes * 100 / nbElectors);
-        results.put("Abstention", format(abstentionResult));
+        results.put("Abstention", abstentionResult);
 
-        return results;
+        return results.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, mapEntry -> format(mapEntry.getValue())));
     }
 
     private String districtWinner(ArrayList<Float> districtResult) {
