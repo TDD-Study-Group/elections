@@ -2,21 +2,19 @@ package org.elections
 
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class Elections(private val list: Map<String, List<String>>, private val withDistrict: Boolean) {
+class Elections(private val votersByDistrict: Map<String, List<String>>, private val withDistrict: Boolean) {
 
     var candidates: MutableList<String> = ArrayList()
     var officialCandidates: MutableList<String> = ArrayList()
     var votesWithoutDistricts = ArrayList<Int>()
-    var votesWithDistricts: MutableMap<String, ArrayList<Int>>
-
-    init {
-        votesWithDistricts = HashMap()
-        votesWithDistricts["District 1"] = ArrayList()
-        votesWithDistricts["District 2"] = ArrayList()
-        votesWithDistricts["District 3"] = ArrayList()
-    }
+    private val votesWithDistricts: Map<String, ArrayList<Int>> = mapOf(
+        "District 1" to ArrayList(),
+        "District 2" to ArrayList(),
+        "District 3" to ArrayList()
+    )
 
     fun addCandidate(candidate: String) {
         officialCandidates.add(candidate)
@@ -125,7 +123,7 @@ class Elections(private val list: Map<String, List<String>>, private val withDis
         results["Blank"] = String.format(Locale.FRENCH, "%.2f%%", blankResult)
         val nullResult = nullVotes.toFloat() * 100 / nbVotes
         results["Null"] = String.format(Locale.FRENCH, "%.2f%%", nullResult)
-        val nbElectors = list.values.map { it.size }.sum()
+        val nbElectors = votersByDistrict.values.map { it.size }.sum()
         val df = DecimalFormat()
         df.maximumFractionDigits = 2
         val abstentionResult = 100 - nbVotes.toFloat() * 100 / nbElectors

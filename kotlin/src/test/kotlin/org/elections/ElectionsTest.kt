@@ -7,12 +7,12 @@ internal class ElectionsTest {
 
     @Test
     fun `Elections without districts`() {
-        val list = mapOf(
+        val votersByDistrict = mapOf(
             "District 1" to listOf("Bob", "Anna", "Jess", "July"),
             "District 2" to listOf("Jerry", "Simon"),
             "District 3" to listOf("Johnny", "Matt", "Carole")
         )
-        val elections = Elections(list, false)
+        val elections = Elections(votersByDistrict, false)
         elections.addCandidate("Michel")
         elections.addCandidate("Jerry")
         elections.addCandidate("Johnny")
@@ -38,12 +38,12 @@ internal class ElectionsTest {
 
     @Test
     fun `Elections with districts`() {
-        val list = mapOf(
+        val votersByDistrict = mapOf(
             "District 1" to listOf("Bob", "Anna", "Jess", "July"),
             "District 2" to listOf("Jerry", "Simon"),
             "District 3" to listOf("Johnny", "Matt", "Carole")
         )
-        val elections = Elections(list, true)
+        val elections = Elections(votersByDistrict, true)
         elections.addCandidate("Michel")
         elections.addCandidate("Jerry")
         elections.addCandidate("Johnny")
