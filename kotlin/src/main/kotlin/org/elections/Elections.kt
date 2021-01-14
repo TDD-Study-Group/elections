@@ -50,19 +50,21 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
         val results: MutableMap<String, String> = HashMap()
         var nullVotes = 0
         var blankVotes = 0
-        var nbValidVotes = 0
 
-
-        if (withDistrict) {
+        val nbValidVotes = if (withDistrict) {
+            var nbValidVotes1 = 0
             for (candidate in officialCandidates) {
                 val index = candidates.indexOf(candidate)
-                nbValidVotes = votesWithDistricts.values.sumBy { it[index] }
+                 nbValidVotes1 += votesWithDistricts.values.sumBy { it[index] }
             }
+            nbValidVotes1
         } else {
+            var nbValidVotes1 = 0
             for (candidate in officialCandidates) {
                 val index = candidates.indexOf(candidate)
-                nbValidVotes += votesWithoutDistricts[index]
+                nbValidVotes1 += votesWithoutDistricts[index]
             }
+            nbValidVotes1
         }
 
         if (withDistrict) {
