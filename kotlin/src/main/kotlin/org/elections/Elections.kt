@@ -48,18 +48,10 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
 
     fun results(): Map<String, String> {
         val results: MutableMap<String, String> = HashMap()
-        var nbVotes = 0
         var nullVotes = 0
         var blankVotes = 0
         var nbValidVotes = 0
 
-        if (withDistrict) {
-            for (districtVotes in votesWithDistricts.values) {
-                nbVotes += districtVotes.sum()
-            }
-        } else {
-            nbVotes = votesWithoutDistricts.sum()
-        }
 
         if (withDistrict) {
             for (i in officialCandidates.indices) {
@@ -118,6 +110,11 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
                     }
                 }
             }
+        }
+
+        val nbVotes = when {
+            withDistrict -> votesWithDistricts.values.sumBy(ArrayList<Int>::sum)
+            else -> votesWithoutDistricts.sum()
         }
         val blankResult = blankVotes.toFloat() * 100 / nbVotes
         results["Blank"] = format(blankResult)
