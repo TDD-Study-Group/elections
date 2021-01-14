@@ -11,9 +11,9 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
     var officialCandidates: MutableList<String> = ArrayList()
     var votesWithoutDistricts = ArrayList<Int>()
     private val votesWithDistricts: Map<String, ArrayList<Int>> = mapOf(
-        "District 1" to ArrayList(),
-        "District 2" to ArrayList(),
-        "District 3" to ArrayList()
+            "District 1" to ArrayList(),
+            "District 2" to ArrayList(),
+            "District 3" to ArrayList()
     )
 
     fun addCandidate(candidate: String) {
@@ -53,24 +53,24 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
 
 
         val nbValidVotes = officialCandidates.map { candidate -> candidates.indexOf(candidate) }
-            .sumBy { candidateIndex ->
-                when {
-                    withDistrict -> votesWithDistricts.values.sumBy { districtVotes -> districtVotes[candidateIndex] }
-                    else -> votesWithoutDistricts[candidateIndex]
+                .sumBy { candidateIndex ->
+                    when {
+                        withDistrict -> votesWithDistricts.values.sumBy { districtVotes -> districtVotes[candidateIndex] }
+                        else -> votesWithoutDistricts[candidateIndex]
+                    }
                 }
-            }
 
         if (withDistrict) {
 
-            val officialCandidatesResult: MutableMap<String, Int> = HashMap()
-            for (i in officialCandidates.indices) {
-                officialCandidatesResult[candidates[i]] = 0
-            }
+            val officialCandidatesResult = officialCandidates.map { candidate -> candidate to 0 }.toMap().toMutableMap()
+
             for (districtVotes in votesWithDistricts.values) {
                 val districtResult = ArrayList<Float>()
                 for (i in districtVotes.indices) {
-                    var candidateResult = 0f
-                    if (nbValidVotes != 0) candidateResult = districtVotes[i].toFloat() * 100 / nbValidVotes
+                    val candidateResult = when {
+                        nbValidVotes != 0 -> districtVotes[i].toFloat() * 100 / nbValidVotes
+                        else -> 0f
+                    }
                     val candidate = candidates[i]
                     if (officialCandidates.contains(candidate)) {
                         districtResult.add(candidateResult)
@@ -87,11 +87,11 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
                     if (districtResult[districtWinnerIndex] < districtResult[i]) districtWinnerIndex = i
                 }
                 officialCandidatesResult[candidates[districtWinnerIndex]] =
-                    officialCandidatesResult[candidates[districtWinnerIndex]]!! + 1
+                        officialCandidatesResult[candidates[districtWinnerIndex]]!! + 1
             }
             for (i in 0 until officialCandidatesResult.size) {
                 val ratioCandidate =
-                    officialCandidatesResult[candidates[i]]!!.toFloat() / officialCandidatesResult.size * 100
+                        officialCandidatesResult[candidates[i]]!!.toFloat() / officialCandidatesResult.size * 100
                 results[candidates[i]] = format(ratioCandidate)
             }
         } else {
