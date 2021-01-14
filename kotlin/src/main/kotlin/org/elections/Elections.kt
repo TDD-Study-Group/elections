@@ -54,12 +54,19 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
 
 
         if (withDistrict) {
-            for (i in officialCandidates.indices) {
-                val index = candidates.indexOf(officialCandidates[i])
-                for (districtVotes in votesWithDistricts.values) {
-                    nbValidVotes += districtVotes[index]
-                }
+            for (candidate in officialCandidates) {
+                val index = candidates.indexOf(candidate)
+                nbValidVotes = votesWithDistricts.values.sumBy { it[index] }
             }
+        } else {
+            for (candidate in officialCandidates) {
+                val index = candidates.indexOf(candidate)
+                nbValidVotes += votesWithoutDistricts[index]
+            }
+        }
+
+        if (withDistrict) {
+
             val officialCandidatesResult: MutableMap<String, Int> = HashMap()
             for (i in officialCandidates.indices) {
                 officialCandidatesResult[candidates[i]] = 0
@@ -93,10 +100,7 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
                 results[candidates[i]] = format(ratioCandidate)
             }
         } else {
-            for (i in officialCandidates.indices) {
-                val index = candidates.indexOf(officialCandidates[i])
-                nbValidVotes += votesWithoutDistricts[index]
-            }
+
             for (i in votesWithoutDistricts.indices) {
                 val candidatResult = votesWithoutDistricts[i].toFloat() * 100 / nbValidVotes
                 val candidate = candidates[i]
