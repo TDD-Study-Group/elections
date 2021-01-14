@@ -51,13 +51,14 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
         var nullVotes = 0
         var blankVotes = 0
 
-        val nbValidVotes = if (withDistrict) {
-            officialCandidates.map { candidates.indexOf(it) }
-                .sumBy { index -> votesWithDistricts.values.sumBy { it[index] } }
-        } else {
-            officialCandidates.map { candidates.indexOf(it) }
-                .sumBy { votesWithoutDistricts[it] }
-        }
+
+        val nbValidVotes = officialCandidates.map { candidate -> candidates.indexOf(candidate) }
+            .sumBy { candidateIndex ->
+                when {
+                    withDistrict -> votesWithDistricts.values.sumBy { districtVotes -> districtVotes[candidateIndex] }
+                    else -> votesWithoutDistricts[candidateIndex]
+                }
+            }
 
         if (withDistrict) {
 
