@@ -67,19 +67,12 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
             for (districtVotes in votesWithDistricts.values) {
                 val districtResult = ArrayList<Float>()
                 for (i in districtVotes.indices) {
-                    val candidateResult = when {
-                        nbValidVotes != 0 -> districtVotes[i].toFloat() * 100 / nbValidVotes
-                        else -> 0f
-                    }
                     val candidate = candidates[i]
-                    if (officialCandidates.contains(candidate)) {
-                        districtResult.add(candidateResult)
-                    } else {
-                        if (candidates[i].isEmpty()) {
-                            blankVotes += districtVotes[i]
-                        } else {
-                            nullVotes += districtVotes[i]
-                        }
+                    val districtVote = districtVotes[i]
+                    when {
+                        candidate in officialCandidates -> districtResult += candidateResult(nbValidVotes, districtVote)
+                        candidate.isEmpty() -> blankVotes += districtVote
+                        else -> nullVotes += districtVote
                     }
                 }
                 var districtWinnerIndex = 0
@@ -127,5 +120,10 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
         return results
     }
 
-    private fun format(ratioCandidate: Float) = String.format(Locale.FRENCH, "%.2f%%", ratioCandidate)
+    private fun candidateResult(nbValidVotes: Int, districtVote: Int) = when {
+        nbValidVotes != 0 -> districtVote.toFloat() * 100 / nbValidVotes
+        else -> 0f
+    }
+
+    private fun format(ratioCandidate: Float): String = "%.2f%%".format(Locale.FRENCH, ratioCandidate)
 }
