@@ -35,8 +35,7 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
                         votes.add(0)
                     }
                 }
-                val index = candidates.indexOf(candidate)
-                districtVotes[index] = districtVotes[index] + 1
+                districtVotes.incrementVote(candidate)
             }
         } else {
             val votesWithoutDistrictsTemp = votesWithoutDistricts
@@ -44,9 +43,13 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
                 candidates.add(candidate)
                 votesWithoutDistrictsTemp.add(0)
             }
-            val index = candidates.indexOf(candidate)
-            votesWithoutDistrictsTemp[index] = votesWithoutDistrictsTemp[index] + 1
+            votesWithoutDistrictsTemp.incrementVote(candidate)
         }
+    }
+
+    private fun ArrayList<Int>.incrementVote(candidate: String) {
+        val index = candidates.indexOf(candidate)
+        this[index] = this[index] + 1
     }
 
     fun results(): Map<String, String> {
