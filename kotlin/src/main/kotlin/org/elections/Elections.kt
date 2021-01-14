@@ -30,26 +30,20 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
     }
 
     fun voteFor(elector: String?, candidate: String, electorDistrict: String) {
-        if (withDistrict) {
-            if (votesWithDistricts.containsKey(electorDistrict)) {
-                val districtVotes = votesWithDistricts[electorDistrict]!!
-                if (candidate !in candidates) {
-                    candidates.add(candidate)
-                    votesWithDistricts.forEach { (_, votes) -> votes.add(0) }
-                }
-                districtVotes.incrementVote(candidate)
+        when {
+            withDistrict -> if (districtExists(electorDistrict)) {
+                votesWithDistricts[electorDistrict]!!.incrementVotesFor(candidate)
             }
-        } else {
-            val votesWithoutDistrictsTemp = votesWithoutDistricts
-            if (candidate !in candidates) {
-                candidates.add(candidate)
-                votesWithoutDistrictsTemp.add(0)
-            }
-            votesWithoutDistrictsTemp.incrementVote(candidate)
+            else -> votesWithoutDistricts.incrementVotesFor(candidate)
         }
     }
 
-    private fun ArrayList<Int>.incrementVote(candidate: String) {
+    private fun districtExists(electorDistrict: String) = electorDistrict in votesWithDistricts.keys
+
+    private fun ArrayList<Int>.incrementVotesFor(candidate: String) {
+        if (candidate !in candidates) {
+            addUnofficialCandidate(candidate)
+        }
         val index = candidates.indexOf(candidate)
         this[index] = this[index] + 1
     }
