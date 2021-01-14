@@ -18,6 +18,10 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
 
     fun addCandidate(candidate: String) {
         officialCandidates.add(candidate)
+        addUnofficialCandidate(candidate)
+    }
+
+    private fun addUnofficialCandidate(candidate: String) {
         candidates.add(candidate)
         votesWithoutDistricts.add(0)
         votesWithDistricts["District 1"]!!.add(0)
@@ -31,9 +35,7 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
                 val districtVotes = votesWithDistricts[electorDistrict]!!
                 if (candidate !in candidates) {
                     candidates.add(candidate)
-                    votesWithDistricts.forEach { (district, votes) ->
-                        votes.add(0)
-                    }
+                    votesWithDistricts.forEach { (_, votes) -> votes.add(0) }
                 }
                 districtVotes.incrementVote(candidate)
             }
