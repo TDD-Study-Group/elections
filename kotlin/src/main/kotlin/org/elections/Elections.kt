@@ -24,9 +24,7 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
     private fun addUnofficialCandidate(candidate: String) {
         candidates.add(candidate)
         votesWithoutDistricts.add(0)
-        votesWithDistricts["District 1"]!!.add(0)
-        votesWithDistricts["District 2"]!!.add(0)
-        votesWithDistricts["District 3"]!!.add(0)
+        votesWithDistricts.forEach { (_, votes) -> votes.add(0) }
     }
 
     fun voteFor(elector: String?, candidate: String, electorDistrict: String) {
@@ -54,29 +52,16 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
         var nullVotes = 0
         var blankVotes = 0
         var nbValidVotes = 0
-        if (!withDistrict) {
-            nbVotes = votesWithoutDistricts.sum()
-            for (i in officialCandidates.indices) {
-                val index = candidates.indexOf(officialCandidates[i])
-                nbValidVotes += votesWithoutDistricts[index]
-            }
-            for (i in votesWithoutDistricts.indices) {
-                val candidatResult = votesWithoutDistricts[i].toFloat() * 100 / nbValidVotes
-                val candidate = candidates[i]
-                if (officialCandidates.contains(candidate)) {
-                    results[candidate] = String.format(Locale.FRENCH, "%.2f%%", candidatResult)
-                } else {
-                    if (candidates[i].isEmpty()) {
-                        blankVotes += votesWithoutDistricts[i]
-                    } else {
-                        nullVotes += votesWithoutDistricts[i]
-                    }
-                }
-            }
-        } else {
+
+        if (withDistrict) {
             for (districtVotes in votesWithDistricts.values) {
                 nbVotes += districtVotes.sum()
             }
+        } else {
+            nbVotes = votesWithoutDistricts.sum()
+        }
+
+        if (withDistrict) {
             for (i in officialCandidates.indices) {
                 val index = candidates.indexOf(officialCandidates[i])
                 for (districtVotes in votesWithDistricts.values) {
@@ -113,18 +98,38 @@ class Elections(private val votersByDistrict: Map<String, List<String>>, private
             for (i in 0 until officialCandidatesResult.size) {
                 val ratioCandidate =
                     officialCandidatesResult[candidates[i]]!!.toFloat() / officialCandidatesResult.size * 100
-                results[candidates[i]] = String.format(Locale.FRENCH, "%.2f%%", ratioCandidate)
+                results[candidates[i]] = format(ratioCandidate)
+            }
+        } else {
+            for (i in officialCandidates.indices) {
+                val index = candidates.indexOf(officialCandidates[i])
+                nbValidVotes += votesWithoutDistricts[index]
+            }
+            for (i in votesWithoutDistricts.indices) {
+                val candidatResult = votesWithoutDistricts[i].toFloat() * 100 / nbValidVotes
+                val candidate = candidates[i]
+                if (officialCandidates.contains(candidate)) {
+                    results[candidate] = format(candidatResult)
+                } else {
+                    if (candidates[i].isEmpty()) {
+                        blankVotes += votesWithoutDistricts[i]
+                    } else {
+                        nullVotes += votesWithoutDistricts[i]
+                    }
+                }
             }
         }
         val blankResult = blankVotes.toFloat() * 100 / nbVotes
-        results["Blank"] = String.format(Locale.FRENCH, "%.2f%%", blankResult)
+        results["Blank"] = format(blankResult)
         val nullResult = nullVotes.toFloat() * 100 / nbVotes
-        results["Null"] = String.format(Locale.FRENCH, "%.2f%%", nullResult)
+        results["Null"] = format(nullResult)
         val nbElectors = votersByDistrict.values.map { it.size }.sum()
         val df = DecimalFormat()
         df.maximumFractionDigits = 2
         val abstentionResult = 100 - nbVotes.toFloat() * 100 / nbElectors
-        results["Abstention"] = String.format(Locale.FRENCH, "%.2f%%", abstentionResult)
+        results["Abstention"] = format(abstentionResult)
         return results
     }
+
+    private fun format(ratioCandidate: Float) = String.format(Locale.FRENCH, "%.2f%%", ratioCandidate)
 }
